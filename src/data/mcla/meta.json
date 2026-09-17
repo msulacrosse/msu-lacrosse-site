@@ -1,0 +1,31 @@
+{
+  "season": "2026",
+  "team": {
+    "name": "Michigan State",
+    "slug": "michigan-state",
+    "url": "https://mcla.us/teams/michigan-state/2026/schedule"
+  },
+  "record": {
+    "overall": {
+      "wins": 10,
+      "losses": 5
+    },
+    "pct": "0.667",
+    "division": {
+      "wins": 2,
+      "losses": 1
+    },
+    "divisionPct": "0.667",
+    "streak": "8 - 2",
+    "home": {
+      "wins": 5,
+      "losses": 0
+    },
+    "away": {
+      "wins": 5,
+      "losses": 5
+    }
+  },
+  "syncedAt": "2026-09-17T17:03:08.397Z",
+  "previousSeason": null
+}
