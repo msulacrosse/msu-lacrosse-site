@@ -23,9 +23,9 @@ export const site = {
     // Three photos for the About section. Drop files in /public/photos and
     // update these paths. Leave a path empty to show a placeholder.
     photos: [
-      { src: '', alt: 'Team photo' },
-      { src: '', alt: 'Game action' },
-      { src: '', alt: 'Travel and locker room' },
+      { src: '/photos/about-1.jpg', alt: 'Spartans fighting for a ground ball against Purdue' },
+      { src: '/photos/about-2.jpg', alt: 'MSU attackman winding up to shoot' },
+      { src: '/photos/about-3.jpg', alt: 'MSU midfielder splitting a defender in front of the goal' },
     ],
     // Paragraphs on the /about page
     body: [
@@ -41,7 +41,7 @@ export const site = {
     text:
       'Tryouts are held at the start of the fall semester. Reach out to the coaching staff with your name, position, graduation year and playing background, and we will get back to you with dates and details.',
     // Five portrait photos for the fanned gallery. Same rules as About photos.
-    gallery: ['', '', '', '', ''],
+    gallery: ['/photos/gallery-1.jpg', '/photos/gallery-2.jpg', '/photos/gallery-3.jpg', '/photos/gallery-4.jpg', '/photos/gallery-5.jpg'],
   },
 
   // FAQ on the home page. Fill in q (question) and a (answer) for each.

@@ -1,7 +1,6 @@
 ---
 import { nav, site } from '../data/site';
 import { meta } from '../lib/mcla';
-const year = new Date().getFullYear();
 ---
 <footer class="footer">
   <div class="container">
@@ -12,11 +11,6 @@ const year = new Date().getFullYear();
       <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
     </div>
     <div class="wordmark-wrap" data-reveal aria-hidden="true"><div class="wordmark">Spartans</div><span class="cut"></span></div>
-    <div class="bottom">
-      <span class="copy">© {year} MSU Lacrosse</span>
-      <span class="rule"></span>
-      <span class="right">All Rights Reserved</span>
-    </div>
     <p class="fine">Schedule, roster and stats update automatically from <a href={site.mclaTeamUrl} target="_blank" rel="noopener">mcla.us</a>{meta.syncedAt ? ` · last synced ${new Date(meta.syncedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` : ''}.</p>
   </div>
 </footer>
@@ -34,10 +28,6 @@ const year = new Date().getFullYear();
     -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap;
   }
   .cut { position: absolute; left: 0; right: 0; top: 56%; height: 1px; background: var(--bg); }
-  .bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: clamp(64px, 8vw, 120px); font-size: 17px; }
-  .copy { font-weight: 700; white-space: nowrap; }
-  .rule { flex: 1; min-width: 40px; height: 1px; background: rgba(255, 255, 255, 0.2); }
-  .right { white-space: nowrap; color: var(--muted); }
-  .fine { margin-top: 28px; font-size: 13px; color: var(--dim); text-align: center; }
+  .fine { margin-top: clamp(48px, 6vw, 80px); font-size: 13px; color: var(--dim); text-align: center; }
   .fine a { text-decoration: underline; text-underline-offset: 3px; }
 </style>
