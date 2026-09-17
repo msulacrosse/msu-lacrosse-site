@@ -44,27 +44,15 @@ export const site = {
     gallery: ['', '', '', '', ''],
   },
 
+  // FAQ on the home page. Fill in q (question) and a (answer) for each.
+  // Add or remove entries freely. An entry with an empty answer shows
+  // "Answer coming soon." on the site until you write one.
   faq: [
-    {
-      q: 'When are tryouts?',
-      a: 'Tryouts are held at the start of the fall semester. Dates and location are posted here and on Instagram once the academic calendar is set.',
-    },
-    {
-      q: 'Do I need prior experience?',
-      a: 'Most players come in with high school or club experience, but athletes who are new to the sport are welcome to try out. Come ready to compete and learn.',
-    },
-    {
-      q: 'What does the season look like?',
-      a: 'Fall ball in September and October, winter training, and the spring competitive season from February through May, with conference playoffs and the MCLA National Tournament at the end.',
-    },
-    {
-      q: 'Are there dues or travel costs?',
-      a: 'As a club program, players pay dues that cover league fees, travel, field time and gear. The team fundraises throughout the year to keep costs down. Contact the coaches for current numbers.',
-    },
-    {
-      q: 'How do I contact the coaches?',
-      a: 'Email the team using the button below, or send a message on Instagram.',
-    },
+    { q: 'Question 1', a: '' },
+    { q: 'Question 2', a: '' },
+    { q: 'Question 3', a: '' },
+    { q: 'Question 4', a: '' },
+    { q: 'Question 5', a: '' },
   ],
 
   // Home page "Meet The Spartans" cards. Leave empty to show the season's

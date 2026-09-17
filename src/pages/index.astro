@@ -124,7 +124,7 @@ const fan = [
       {site.faq.map((f) => (
         <details name="faq">
           <summary><span>{f.q}</span><span class="chev">⌵</span></summary>
-          <p class="answer">{f.a}</p>
+          <p class="answer">{f.a || 'Answer coming soon.'}</p>
         </details>
       ))}
     </div>
