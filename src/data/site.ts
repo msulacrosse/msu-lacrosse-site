@@ -20,8 +20,10 @@ export const site = {
   about: {
     heading:
       "Learn more about the Michigan State Men's Lacrosse program, our history, and what we're all about.",
-    // Three photos for the About section. Drop files in /public/photos and
-    // update these paths. Leave a path empty to show a placeholder.
+    // Big photo at the top of the /about page.
+    teamPhoto: { src: '/photos/team-2026.jpg', alt: 'The 2026 Spartans celebrating with the conference trophy' },
+    // Three photos for the About section on the home page. Drop files in
+    // /public/photos and update these paths. Leave a path empty to show a placeholder.
     photos: [
       { src: '/photos/about-1.jpg', alt: 'Spartans fighting for a ground ball against Purdue' },
       { src: '/photos/about-2.jpg', alt: 'MSU attackman winding up to shoot' },
@@ -48,11 +50,18 @@ export const site = {
   // Add or remove entries freely. An entry with an empty answer shows
   // "Answer coming soon." on the site until you write one.
   faq: [
-    { q: 'Question 1', a: '' },
-    { q: 'Question 2', a: '' },
-    { q: 'Question 3', a: '' },
-    { q: 'Question 4', a: '' },
-    { q: 'Question 5', a: '' },
+    {
+      q: 'Where does fundraising and sponsorship money go?',
+      a: 'Straight back into the program. It covers travel to away games and tournaments, equipment, field time and the other costs of running a club team, and it helps keep player dues down.',
+    },
+    {
+      q: 'Do you accept donations?',
+      a: 'Yes. Use the Contact Us button and we will get back to you with the details.',
+    },
+    {
+      q: 'When are tryouts?',
+      a: 'Tryouts were held September 1–3 this year. Next year\'s dates will be posted here and on Instagram once they are set.',
+    },
   ],
 
   // Home page "Meet The Spartans" cards. Leave empty to show the season's
