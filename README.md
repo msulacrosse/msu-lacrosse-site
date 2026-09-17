@@ -67,8 +67,8 @@ All in **`src/data/site.ts`**: the About paragraphs, FAQ questions, contact emai
 
 Things marked `TODO` in that file need a real value (the contact email). `featuredNumbers` picks who appears in "Meet The Spartans" on the home page — leave it empty for the season's top 5 scorers, or list jersey numbers.
 
-### Calendar feed
-Share `yoursite.com/schedule.ics` with players and parents. In Google Calendar: *Other calendars → + → From URL*. In iPhone Calendar: *Add Subscription Calendar*. It updates by itself as the schedule changes.
+### Calendar feed (optional, not linked on the site)
+`yoursite.com/schedule.ics` still exists if anyone wants to subscribe to the schedule in Google Calendar (*Other calendars → + → From URL*) or iPhone Calendar (*Add Subscription Calendar*). There's no button for it on the site; share the link directly if it's useful.
 
 ---
 
