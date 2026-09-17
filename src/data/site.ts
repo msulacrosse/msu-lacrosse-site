@@ -9,7 +9,7 @@ export const site = {
   description:
     "Official site of Michigan State University Men's Lacrosse — schedule, results, roster, stats and news for the Spartans, competing in the MCLA's Upper Midwest Lacrosse Conference.",
   contactEmail: 'lacrosse@msu.edu', // TODO: confirm the team inbox
-  instagram: 'https://www.instagram.com/msulacrosse', // TODO: confirm handle
+  instagram: 'https://www.instagram.com/msu_lacrosse/',
   mclaTeamUrl: 'https://mcla.us/teams/michigan-state',
 
   hero: {
@@ -67,6 +67,10 @@ export const site = {
     },
   ],
 
+  // Home page "Meet The Spartans" cards. Leave empty to show the season's
+  // top 5 point scorers automatically; or list jersey numbers to hand-pick.
+  featuredNumbers: [] as number[],
+
   // Sponsor logos: drop files in /public/sponsors and list them here.
   // Leave the list empty to hide the section.
   sponsors: [] as { name: string; logo: string; url?: string }[],
@@ -76,5 +80,6 @@ export const nav = [
   { label: 'Home', href: '/' },
   { label: 'Schedule', href: '/schedule' },
   { label: 'Roster', href: '/roster' },
+  { label: 'Stats', href: '/stats' },
   { label: 'News', href: '/news' },
 ];

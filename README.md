@@ -2,7 +2,7 @@
 
 The team site for Michigan State Men's Lacrosse. Schedule, results, record, roster, coaches and stats pull from [mcla.us](https://mcla.us/teams/michigan-state) automatically every day. News posts are written on a hidden password-protected page. Everything runs on free tiers.
 
-**Pages:** Home · `/schedule` · `/roster` · `/roster/<player>` · `/stats` · `/news` · `/news/<post>` · `/about` · `/admin` (hidden) · `/schedule.ics` (calendar feed)
+**Pages:** Home · `/schedule` · `/roster` · `/roster/<player>` · `/stats` · `/news` · `/news/<post>` · `/about` · `/admin` (hidden, password) · `/schedule.ics` (calendar feed)
 
 ---
 
@@ -50,9 +50,12 @@ Vercel's free Hobby plan is meant for personal and non-commercial projects. A cl
 ## 2. Day to day
 
 ### Posting news
-Go to `yoursite.com/admin`. It's not linked from anywhere. Fill in the title, a one-line summary, optionally a photo, write the article, type the password, hit Publish. The site rebuilds and the post is live in a minute or two. Plain text is fine; `**bold**`, `## headings`, `- bullets` and links also work, and there's a Preview tab.
+Go to `yoursite.com/admin` (it's not linked from anywhere) and sign in with the team password. You'll see every post with **Edit** and **View** buttons, and a **New post** button. The editor is a normal rich-text box (headings, bold, lists, links; paste from anywhere) plus title, date, category, a one-line summary and an optional photo. Publish, and the site rebuilds and goes live in a minute or two. Editing works the same way; there's a **Delete post** button at the bottom of the editor (click it twice).
 
-To edit or delete a post afterwards, open the repo on GitHub → `src/content/news/` → the post's `.md` file → pencil icon (or trash). Save = live in a minute.
+Sign-in lasts 12 hours per browser tab. Posts are stored as files in `src/content/news/` in the repo, so you can also edit them on GitHub directly if you ever need to.
+
+### Contact form
+"Contact Us" and "Get in touch" open a form. It is **not connected to an inbox yet** — submitting shows a note and offers to send the message as an email instead. To connect it, sign up for a free form service (Formspree, Basin, Web3Forms all have free tiers), and replace the submit handler at the bottom of `src/components/ContactModal.astro` with a POST to the endpoint they give you.
 
 ### Schedule, roster, stats
 Nothing to do. GitHub Actions runs `scripts/sync-mcla.mjs` every day at 6am Eastern (and every 4 hours February–May). It follows wherever `mcla.us/teams/michigan-state` redirects, so when MCLA publishes the 2027 season the site switches over on its own. Player headshots and opponent logos are copied into `public/mcla/` so the site doesn't depend on MCLA's image hosting.
@@ -62,7 +65,7 @@ If MCLA ever redesigns their pages, the sync will log an error and leave the las
 ### Editing text, FAQ, contact email, photos
 All in **`src/data/site.ts`**: the About paragraphs, FAQ questions, contact email, Instagram link, join-the-team text, sponsor logos, and the photo slots on the home page. Drop photos in `public/photos/` and put the paths in that file. Edit on GitHub directly or locally.
 
-Things marked `TODO` in that file need a real value: the contact email and Instagram handle.
+Things marked `TODO` in that file need a real value (the contact email). `featuredNumbers` picks who appears in "Meet The Spartans" on the home page — leave it empty for the season's top 5 scorers, or list jersey numbers.
 
 ### Calendar feed
 Share `yoursite.com/schedule.ics` with players and parents. In Google Calendar: *Other calendars → + → From URL*. In iPhone Calendar: *Add Subscription Calendar*. It updates by itself as the schedule changes.

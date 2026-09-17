@@ -68,7 +68,11 @@ export const statsForPlayer = (p: Player) =>
   null;
 
 /** Players to feature on the home page: top scorers with headshots, then fill. */
-export const featuredPlayers = (n = 5) => {
+export const featuredPlayers = (n = 5, pick: number[] = []) => {
+  if (pick.length) {
+    const chosen = pick.map((num) => roster.find((r) => r.number === num)).filter((p): p is Player => !!p);
+    if (chosen.length) return chosen.slice(0, n);
+  }
   const byPts = [...stats.field].sort((a, b) => (b.pts ?? 0) - (a.pts ?? 0));
   const picked: Player[] = [];
   for (const s of byPts) {

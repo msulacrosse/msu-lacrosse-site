@@ -3,6 +3,7 @@ import '@fontsource-variable/plus-jakarta-sans';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import ContactModal from '../components/ContactModal.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -46,6 +47,7 @@ const ogImage = new URL(image, Astro.site);
       <slot />
     </main>
     <Footer />
+    <ContactModal />
     <script>
       // Scroll reveal: [data-reveal] fades/slides in once when 12% enters the viewport
       const els = document.querySelectorAll<HTMLElement>('[data-reveal]');

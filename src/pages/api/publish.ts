@@ -1,77 +1,60 @@
 import type { APIRoute } from 'astro';
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { authed, config, json, slugify, yamlStr, commitFiles, type FileChange } from '../../lib/admin';
 
 /**
- * POST /api/publish — used by the hidden /admin page.
+ * POST /api/publish — create or update a news post. Used by /admin.
+ * Requires Authorization: Bearer <token> from /api/auth.
  *
- * Checks the shared password, then writes a markdown post (and optional image)
- * straight into the GitHub repo in one commit. Vercel sees the commit and
- * redeploys, so the post is live a minute or two later.
- *
- * Required environment variables (set in Vercel → Project → Settings → Environment Variables):
- *   ADMIN_PASSWORD   the password people type on /admin
- *   GITHUB_TOKEN     fine-grained token with "Contents: Read and write" on this repo
- *   GITHUB_REPO      "org-name/repo-name"
- *   GITHUB_BRANCH    optional, default "main"
+ * Body: { slug?, title, date, tag, excerpt, author, html, image?: {name,type,data}, removeImage?, existingImage? }
+ * The article body is stored as HTML inside the markdown file (markdown allows raw HTML),
+ * which is what the rich text editor produces.
  */
 export const prerender = false;
 
-const env = (k: string) => process.env[k] ?? (import.meta.env as any)[k] ?? '';
-const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
-const sha256 = (s: string) => createHash('sha256').update(s).digest();
-const slugify = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 60);
-const yamlStr = (s: string) => JSON.stringify(s); // JSON strings are valid YAML
-
 interface Body {
-  password: string;
+  slug?: string;
   title: string;
-  date?: string;      // YYYY-MM-DD
+  date?: string;
   tag?: string;
   excerpt?: string;
   author?: string;
-  body: string;       // markdown
-  image?: { name: string; type: string; data: string }; // base64
+  html: string;
+  image?: { name: string; type: string; data: string };
+  existingImage?: string;
+  removeImage?: boolean;
 }
 
-async function gh(path: string, token: string, init: RequestInit = {}) {
-  const res = await fetch(`${env('GITHUB_API_BASE') || 'https://api.github.com'}${path}`, {
-    ...init,
-    headers: { authorization: `Bearer ${token}`, accept: 'application/vnd.github+json', 'x-github-api-version': '2022-11-28', 'content-type': 'application/json', 'user-agent': 'msu-lacrosse-site', ...(init.headers || {}) },
-  });
-  const text = await res.text();
-  let data: any = {};
-  try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
-  if (!res.ok) throw new Error(`GitHub ${res.status} on ${path}: ${data.message || text}`);
-  return data;
+// Strip anything that shouldn't come out of the editor (scripts, event handlers, javascript: links)
+function sanitize(html: string) {
+  return html
+    .replace(/<\s*(script|style|iframe|object|embed)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
+    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    .replace(/(href|src)\s*=\s*(["']?)\s*javascript:[^"'>\s]*/gi, '$1=$2#');
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  const password = env('ADMIN_PASSWORD');
-  const token = env('GITHUB_TOKEN');
-  const repo = env('GITHUB_REPO');
-  const branch = env('GITHUB_BRANCH') || 'main';
-  if (!password || !token || !repo) return json({ error: 'Publishing is not configured yet. Set ADMIN_PASSWORD, GITHUB_TOKEN and GITHUB_REPO in Vercel.' }, 500);
+  if (!config().ok) return json({ error: 'Publishing is not configured yet. Set ADMIN_PASSWORD, GITHUB_TOKEN and GITHUB_REPO in Vercel.' }, 500);
+  if (!authed(request)) return json({ error: 'Not signed in' }, 401);
 
   let body: Body;
   try { body = await request.json(); } catch { return json({ error: 'Bad request' }, 400); }
 
-  // Constant-time password check + a delay on failure to slow down guessing
-  const ok = body.password && timingSafeEqual(sha256(body.password), sha256(password));
-  if (!ok) { await new Promise((r) => setTimeout(r, 1500)); return json({ error: 'Wrong password' }, 401); }
-
   const title = (body.title || '').trim();
-  const markdown = (body.body || '').trim();
-  if (!title || !markdown) return json({ error: 'Title and article text are required' }, 400);
+  const html = sanitize((body.html || '').trim());
+  const plain = html.replace(/<[^>]+>/g, '').trim();
+  if (!title || !plain) return json({ error: 'Title and article text are required' }, 400);
   const date = /^\d{4}-\d{2}-\d{2}$/.test(body.date || '') ? body.date! : new Date().toISOString().slice(0, 10);
   const tag = (body.tag || 'Team').trim().slice(0, 30);
   const excerpt = (body.excerpt || '').trim().slice(0, 300);
   const author = (body.author || '').trim().slice(0, 80);
-  const slug = `${date}-${slugify(title) || 'post'}`;
+  const editing = Boolean(body.slug);
+  const slug = editing ? String(body.slug).replace(/[^a-z0-9-]/g, '') : `${date}-${slugify(title) || 'post'}`;
+  if (!slug) return json({ error: 'Bad slug' }, 400);
 
-  const files: { path: string; content: string; encoding: 'utf-8' | 'base64' }[] = [];
-  let imagePath: string | undefined;
+  const files: FileChange[] = [];
+  let imagePath: string | undefined = body.removeImage ? undefined : (body.existingImage || undefined);
   if (body.image?.data) {
-    const ext = (body.image.type === 'image/png' ? 'png' : body.image.type === 'image/webp' ? 'webp' : 'jpg');
+    const ext = body.image.type === 'image/png' ? 'png' : body.image.type === 'image/webp' ? 'webp' : 'jpg';
     const base = slugify(body.image.name.replace(/\.[^.]+$/, '')) || 'photo';
     imagePath = `/news/${slug}/${base}.${ext}`;
     if (body.image.data.length > 6_000_000) return json({ error: 'Image is too large (max ~4 MB)' }, 413);
@@ -88,24 +71,11 @@ export const POST: APIRoute = async ({ request }) => {
     imagePath ? `image: ${yamlStr(imagePath)}` : null,
     '---',
   ].filter(Boolean).join('\n');
-  files.push({ path: `src/content/news/${slug}.md`, content: `${front}\n\n${markdown}\n`, encoding: 'utf-8' });
+  files.push({ path: `src/content/news/${slug}.md`, content: `${front}\n\n${html}\n` });
 
   try {
-    // One commit with all files, via the Git Data API
-    const ref = await gh(`/repos/${repo}/git/ref/heads/${branch}`, token);
-    const baseSha: string = ref.object.sha;
-    const baseCommit = await gh(`/repos/${repo}/git/commits/${baseSha}`, token);
-    const tree = await Promise.all(files.map(async (f) => {
-      const blob = await gh(`/repos/${repo}/git/blobs`, token, { method: 'POST', body: JSON.stringify({ content: f.content, encoding: f.encoding }) });
-      return { path: f.path, mode: '100644', type: 'blob', sha: blob.sha };
-    }));
-    const newTree = await gh(`/repos/${repo}/git/trees`, token, { method: 'POST', body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree }) });
-    const commit = await gh(`/repos/${repo}/git/commits`, token, {
-      method: 'POST',
-      body: JSON.stringify({ message: `news: ${title}${author ? ` (by ${author})` : ''}`, tree: newTree.sha, parents: [baseSha] }),
-    });
-    await gh(`/repos/${repo}/git/refs/heads/${branch}`, token, { method: 'PATCH', body: JSON.stringify({ sha: commit.sha, force: false }) });
-    return json({ ok: true, slug, url: `/news/${slug}`, commit: commit.sha });
+    const sha = await commitFiles(`news: ${editing ? 'update' : 'add'} ${title}${author ? ` (by ${author})` : ''}`, files);
+    return json({ ok: true, slug, url: `/news/${slug}`, commit: sha });
   } catch (e: any) {
     console.error(e);
     return json({ error: e.message || 'Publish failed' }, 502);

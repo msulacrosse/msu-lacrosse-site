@@ -7,7 +7,7 @@ const year = new Date().getFullYear();
   <div class="container">
     <div class="links">
       {nav.map((l) => <a href={l.href}>{l.label}</a>)}
-      <a href="/#contact">Contact Us</a>
+      <a href="#contact" data-open-contact>Contact Us</a>
       <a href={site.mclaTeamUrl} target="_blank" rel="noopener">MCLA</a>
       <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
     </div>

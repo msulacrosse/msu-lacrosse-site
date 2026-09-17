@@ -11,7 +11,7 @@ const upcoming = upcomingGames().slice(0, 3);
 const recent = upcoming.length ? [] : lastResults(3);
 const games = upcoming.length ? upcoming : recent;
 const scheduleHeading = upcoming.length ? 'Next Up For The Spartans' : 'Latest Results';
-const players = featuredPlayers(5);
+const players = featuredPlayers(5, site.featuredNumbers);
 const news = (await getCollection('news', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
 const fan = [
   { x: '-150%', y: '12%', rot: '-14deg', z: 1 },
@@ -61,13 +61,17 @@ const fan = [
     <div class="game-cards">
       {games.map((g, i) => (
         <a href={`/schedule#${g.id}`} class="card game-card" data-reveal data-delay={i * 80}>
-          <div style="min-width:0">
+          {g.opponentLogo && <img class="game-card__watermark" src={g.opponentLogo} alt="" aria-hidden="true" loading="lazy" />}
+          <div style="min-width:0;position:relative">
             <div class="when">{longDate(g)} · {gameTime(g)}</div>
             <h3>{prefix(g)} {opponentLabel(g)}</h3>
             <p class="loc">{locationLabel(g) || (g.home ? 'East Lansing, MI' : 'Away')}</p>
             <span class:list={['pill', { 'pill--loss': g.result?.outcome === 'L' }]} style="margin-top:24px">{resultLabel(g) || 'Game details'}</span>
           </div>
-          <span class="go" aria-hidden="true">→</span>
+          <div class="game-card__side">
+            {g.opponentLogo && <span class="game-card__logo"><img src={g.opponentLogo} alt={`${g.opponent} logo`} loading="lazy" width="72" height="72" /></span>}
+            <span class="go" aria-hidden="true">→</span>
+          </div>
         </a>
       ))}
     </div>
@@ -80,7 +84,7 @@ const fan = [
   <section class="container section">
     <div class="eyebrow" data-reveal>Roster</div>
     <h2 class="h-section" data-reveal data-delay="100">Meet The Spartans</h2>
-    <div class="grid-players" style="margin-top:clamp(56px,6vw,100px)">
+    <div class="grid-players grid-players--scroll" style="margin-top:clamp(56px,6vw,100px)">
       {players.map((p, i) => <PlayerCard player={p} delay={i * 80} />)}
     </div>
     <div class="center" data-reveal style="margin-top:48px">
@@ -140,7 +144,7 @@ const fan = [
       <h2 class="h-section" data-reveal data-delay="100" style="margin-top:28px;max-width:900px">{site.join.heading}</h2>
       <p class="join-text" data-reveal data-delay="160">{site.join.text}</p>
       <div class="center" data-reveal data-delay="220" style="margin-top:36px">
-        <a href={`mailto:${site.contactEmail}`} class="btn">Get in touch <span class="arrow">→</span></a>
+        <a href="#contact" class="btn" data-open-contact>Get in touch <span class="arrow">→</span></a>
       </div>
     </div>
   </section>
@@ -167,7 +171,14 @@ const fan = [
   .game-card .when { font-size: 15px; font-weight: 600; color: var(--mint); }
   .game-card h3 { font-size: clamp(26px, 3vw, 40px); margin-top: 10px; }
   .game-card .loc { font-size: 17px; color: var(--muted); margin-top: 12px; }
+  .game-card { position: relative; overflow: hidden; }
+  .game-card__watermark { position: absolute; right: -6%; top: 50%; width: clamp(220px, 28vw, 420px); height: auto; transform: translateY(-50%) rotate(-8deg); opacity: 0.07; filter: grayscale(1) blur(1px); pointer-events: none; transition: opacity 0.4s, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .game-card:hover .game-card__watermark { opacity: 0.12; transform: translateY(-50%) rotate(-4deg) scale(1.04); }
+  .game-card__side { position: relative; display: flex; align-items: center; gap: 16px; align-self: center; }
+  .game-card__logo { width: clamp(64px, 6vw, 88px); height: clamp(64px, 6vw, 88px); border-radius: 50%; background: #fff; display: grid; place-items: center; padding: 10px; box-shadow: 0 0 0 1px var(--border), 0 12px 30px rgba(0, 0, 0, 0.45); }
+  .game-card__logo img { width: 100%; height: 100%; object-fit: contain; }
   .game-card .go { width: 56px; height: 56px; border-radius: 14px; background: var(--green); display: grid; place-items: center; font-size: 22px; }
+  @media (max-width: 640px) { .game-card { grid-template-columns: 1fr; } .game-card__side { order: -1; align-self: start; } .game-card .go { display: none; } .game-card__logo { width: 56px; height: 56px; padding: 8px; } .game-card__watermark { width: 200px; right: -40px; top: 30%; } }
 
   .sponsors { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 40px; }
   .sponsor { height: 100px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); display: grid; place-items: center; padding: 20px; }

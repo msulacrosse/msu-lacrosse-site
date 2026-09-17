@@ -15,7 +15,7 @@ const isActive = (href: string) => (href === '/' ? current === '/' : current.sta
         <a href={l.href} class:list={['link', { active: isActive(l.href) }]} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a>
       ))}
     </div>
-    <a href="/#contact" class="btn btn--sm cta">Contact Us <span class="arrow">→</span></a>
+    <a href="#contact" class="btn btn--sm cta" data-open-contact>Contact Us <span class="arrow">→</span></a>
     <button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
       <span></span><span></span>
     </button>
@@ -23,7 +23,7 @@ const isActive = (href: string) => (href === '/' ? current === '/' : current.sta
 </div>
 <div class="mobile-menu" id="mobile-menu" hidden>
   {nav.map((l) => <a href={l.href} class:list={[{ active: isActive(l.href) }]}>{l.label}</a>)}
-  <a href="/#contact">Contact Us</a>
+  <a href="#contact" data-open-contact>Contact Us</a>
 </div>
 
 <style>

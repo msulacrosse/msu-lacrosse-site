@@ -156,6 +156,16 @@ p { margin: 0; text-wrap: pretty; }
 .player-card .no-photo img { position: static; width: 46%; height: auto; opacity: 0.35; object-fit: contain; }
 
 .grid-players { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+/* On phones the home-page roster preview becomes a swipeable row */
+@media (max-width: 640px) {
+  .grid-players--scroll {
+    display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding: 0 var(--gutter) 8px;
+    scrollbar-width: none;
+  }
+  .grid-players--scroll::-webkit-scrollbar { display: none; }
+  .grid-players--scroll .player-card { flex: 0 0 62vw; scroll-snap-align: start; }
+}
 .grid-news { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 20px; }
 
 /* News card */

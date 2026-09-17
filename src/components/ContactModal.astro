@@ -1,0 +1,94 @@
+---
+/**
+ * Contact / "Join the team" form in a modal. Any element with
+ * data-open-contact opens it. Submitting does NOT send anywhere yet — it shows
+ * a note and offers an email fallback. When you're ready to wire it up, replace
+ * the submit handler in the <script> below with a POST to your form service.
+ */
+import { site } from '../data/site';
+const positions = ['Attack', 'Midfield', 'Defense', 'LSM', 'SSDM', 'Faceoff', 'Goalie', 'Not sure yet'];
+const years = ['2027', '2028', '2029', '2030', '2031', 'Transfer / other'];
+---
+<div class="cm" id="contact-modal" hidden role="dialog" aria-modal="true" aria-labelledby="cm-title">
+  <div class="cm__backdrop" data-close-contact></div>
+  <div class="cm__panel">
+    <button class="cm__close" type="button" aria-label="Close" data-close-contact>×</button>
+    <div class="eyebrow" style="justify-content:flex-start">Get in touch</div>
+    <h2 id="cm-title">Tell us about yourself</h2>
+    <p class="cm__intro">Interested in playing, supporting the team, or just have a question? Send us a note and someone from the program will get back to you.</p>
+    <form id="contact-form" novalidate>
+      <div class="cm__grid">
+        <label class="cm__field"><span>Name</span><input name="name" required autocomplete="name" placeholder="First and last" /></label>
+        <label class="cm__field"><span>Email</span><input name="email" type="email" required autocomplete="email" placeholder="you@example.com" /></label>
+        <label class="cm__field"><span>I'm reaching out about</span>
+          <select name="topic">
+            <option>Joining the team</option>
+            <option>Sponsoring / supporting</option>
+            <option>Alumni</option>
+            <option>Media / other</option>
+          </select>
+        </label>
+        <label class="cm__field"><span>Graduation year <em>(players)</em></span>
+          <select name="year"><option value="">—</option>{years.map((y) => <option>{y}</option>)}</select>
+        </label>
+        <label class="cm__field"><span>Position <em>(players)</em></span>
+          <select name="position"><option value="">—</option>{positions.map((p) => <option>{p}</option>)}</select>
+        </label>
+        <label class="cm__field cm__span"><span>Message</span><textarea name="message" rows="5" required placeholder="A little about you, your playing background, or your question."></textarea></label>
+      </div>
+      <div class="cm__actions">
+        <button type="submit" class="btn">Send <span class="arrow">→</span></button>
+        <span class="cm__status" id="contact-status" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .cm { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; }
+  .cm[hidden] { display: none; }
+  .cm__backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); }
+  .cm__panel { position: relative; width: min(720px, 100%); max-height: calc(100vh - 48px); overflow: auto; background: var(--card-alt); border: 1px solid var(--border); border-radius: 24px; padding: clamp(28px, 4vw, 48px); box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7); animation: cm-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  @keyframes cm-in { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
+  .cm__close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+  .cm__close:hover { border-color: var(--border-hover); }
+  .cm h2 { font-size: clamp(28px, 3.5vw, 44px); margin-top: 16px; }
+  .cm__intro { color: var(--muted); margin-top: 12px; font-size: 16px; max-width: 560px; }
+  .cm__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+  .cm__span { grid-column: span 2; }
+  @media (max-width: 560px) { .cm__grid { grid-template-columns: 1fr; } .cm__span { grid-column: span 1; } .cm { padding: 12px; } .cm__panel { border-radius: 18px; } }
+  .cm__field { display: flex; flex-direction: column; gap: 7px; }
+  .cm__field > span { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--dim); }
+  .cm__field em { text-transform: none; letter-spacing: 0; font-style: normal; color: #666; }
+  .cm input, .cm select, .cm textarea { width: 100%; padding: 13px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); color: #fff; font: inherit; font-size: 16px; outline: none; transition: border-color 0.2s; }
+  .cm input:focus, .cm select:focus, .cm textarea:focus { border-color: var(--mint); }
+  .cm select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #8a8a8a 50%), linear-gradient(135deg, #8a8a8a 50%, transparent 50%); background-position: calc(100% - 22px) 50%, calc(100% - 16px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
+  .cm textarea { resize: vertical; }
+  .cm__actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 24px; }
+  .cm__status { font-size: 14px; color: var(--muted); }
+  .cm__status a { color: var(--mint); text-decoration: underline; }
+  body.cm-open { overflow: hidden; }
+</style>
+
+<script define:vars={{ email: site.contactEmail }}>
+  const modal = document.getElementById('contact-modal');
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('contact-status');
+  const open = () => { modal.hidden = false; document.body.classList.add('cm-open'); setTimeout(() => modal.querySelector('input')?.focus(), 50); };
+  const close = () => { modal.hidden = true; document.body.classList.remove('cm-open'); };
+  document.querySelectorAll('[data-open-contact]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); open(); }));
+  modal.querySelectorAll('[data-close-contact]').forEach((el) => el.addEventListener('click', close));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) close(); });
+  // Open automatically when the page loads with #contact (used by the nav's Contact Us link on other pages)
+  if (location.hash === '#contact') open();
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    if (!fd.get('name') || !fd.get('email') || !fd.get('message')) { status.textContent = 'Name, email and message are required.'; return; }
+    // Not wired to a mailbox yet. Offer a prefilled email instead so nothing is lost.
+    const subject = encodeURIComponent(`[Website] ${fd.get('topic')} — ${fd.get('name')}`);
+    const body = encodeURIComponent(`Name: ${fd.get('name')}\nEmail: ${fd.get('email')}\nTopic: ${fd.get('topic')}\nGrad year: ${fd.get('year') || '-'}\nPosition: ${fd.get('position') || '-'}\n\n${fd.get('message')}`);
+    status.innerHTML = `This form isn't connected to an inbox yet. <a href="mailto:${email}?subject=${subject}&body=${body}">Send it as an email instead</a>.`;
+  });
+</script>
