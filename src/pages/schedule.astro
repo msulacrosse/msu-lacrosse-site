@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import GameRow from '../components/GameRow.astro';
+import { meta, sortedSchedule, recordSummary, stats } from '../lib/mcla';
+import { site } from '../data/site';
+
+const rec = recordSummary();
+const r = meta.record;
+const teamStats = stats.team?.field;
+const gamesPlayed = sortedSchedule.filter((g) => g.result).length;
+const gf = teamStats?.g ?? null;
+const ga = stats.team?.goalie?.ga ?? null;
+---
+<Base title={`${meta.season} Schedule & Results`} description={`Michigan State Men's Lacrosse ${meta.season} schedule, results and season stats.`}>
+  <div class="container page">
+    <div class="eyebrow">{meta.season} Season</div>
+    <h1 class="h-page">Schedule &amp; Results</h1>
+    <div class="record">
+      <span><b>{rec.wins}</b>Wins</span>
+      <span><b>{rec.losses}</b>Losses</span>
+      <span><b>{rec.remaining}</b>Remaining</span>
+    </div>
+    {r && (
+      <div class="record-detail">
+        {r.division && <span>Conference <b>{r.division.wins}-{r.division.losses}</b></span>}
+        {r.home && <span>Home <b>{r.home.wins}-{r.home.losses}</b></span>}
+        {r.away && <span>Away <b>{r.away.wins}-{r.away.losses}</b></span>}
+        {gf != null && gamesPlayed > 0 && <span>Goals for <b>{gf}</b> <span class="dim">({(gf / gamesPlayed).toFixed(1)}/g)</span></span>}
+        {ga != null && gamesPlayed > 0 && <span>Goals against <b>{ga}</b> <span class="dim">({(ga / gamesPlayed).toFixed(1)}/g)</span></span>}
+      </div>
+    )}
+
+    <div class="rows">
+      {sortedSchedule.length ? sortedSchedule.map((g, i) => <GameRow game={g} delay={Math.min(i, 6) * 60} />) : (
+        <p class="muted" style="text-align:center">The {meta.season} schedule hasn't been posted yet. Check back soon.</p>
+      )}
+    </div>
+
+    <div class="actions" data-reveal>
+      <a href="/schedule.ics" class="btn">Add to calendar <span class="arrow">↓</span></a>
+      <a href="/stats" class="btn">Season stats <span class="arrow">→</span></a>
+      <a href={`${site.mclaTeamUrl}/${meta.season}/schedule`} class="btn" target="_blank" rel="noopener">View on MCLA <span class="arrow">↗</span></a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: 180px; min-height: 100vh; }
+  .record-detail { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 28px; margin-top: 20px; font-size: 14px; color: var(--dim); font-weight: 600; }
+  .record-detail b { color: #fff; font-weight: 700; margin-left: 4px; }
+  .rows { display: flex; flex-direction: column; gap: 16px; margin-top: 64px; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 56px; }
+</style>

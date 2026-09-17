@@ -1,0 +1,43 @@
+---
+import { nav, site } from '../data/site';
+import { meta } from '../lib/mcla';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="container">
+    <div class="links">
+      {nav.map((l) => <a href={l.href}>{l.label}</a>)}
+      <a href="/#contact">Contact Us</a>
+      <a href={site.mclaTeamUrl} target="_blank" rel="noopener">MCLA</a>
+      <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+    </div>
+    <div class="wordmark-wrap" data-reveal aria-hidden="true"><div class="wordmark">Spartans</div><span class="cut"></span></div>
+    <div class="bottom">
+      <span class="copy">© {year} MSU Lacrosse</span>
+      <span class="rule"></span>
+      <span class="right">All Rights Reserved</span>
+    </div>
+    <p class="fine">Schedule, roster and stats update automatically from <a href={site.mclaTeamUrl} target="_blank" rel="noopener">mcla.us</a>{meta.syncedAt ? ` · last synced ${new Date(meta.syncedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` : ''}. <a href="/schedule.ics">Add the schedule to your calendar</a>.</p>
+  </div>
+</footer>
+
+<style>
+  .footer { margin-top: var(--section-gap); border-top: 1px solid rgba(255, 255, 255, 0.08); padding: clamp(64px, 8vw, 120px) 24px 40px; }
+  .links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 40px; font-size: 18px; font-weight: 500; }
+  .links a { opacity: 0.85; }
+  .links a:hover { opacity: 1; }
+  .wordmark-wrap { position: relative; margin-top: clamp(64px, 8vw, 120px); }
+  .wordmark {
+    text-align: center;
+    font-weight: 800; font-size: clamp(56px, 17vw, 300px); line-height: 0.85; letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #fff 45%, #d8d2b8 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap;
+  }
+  .cut { position: absolute; left: 0; right: 0; top: 56%; height: 1px; background: var(--bg); }
+  .bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: clamp(64px, 8vw, 120px); font-size: 17px; }
+  .copy { font-weight: 700; white-space: nowrap; }
+  .rule { flex: 1; min-width: 40px; height: 1px; background: rgba(255, 255, 255, 0.2); }
+  .right { white-space: nowrap; color: var(--muted); }
+  .fine { margin-top: 28px; font-size: 13px; color: var(--dim); text-align: center; }
+  .fine a { text-decoration: underline; text-underline-offset: 3px; }
+</style>

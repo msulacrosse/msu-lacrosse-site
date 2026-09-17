@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.vercel/
+.astro/
+.env
+.env.*
+!.env.example
+scripts/.fixtures/
+scripts/_shot.mjs
+scripts/_admin-test.mjs
+scripts/_mock-github.mjs
+.DS_Store
+Thumbs.db

@@ -1,0 +1,47 @@
+name: Sync MCLA data
+
+# Pulls schedule, record, roster, coaches and stats from mcla.us and commits any
+# changes. Vercel redeploys automatically on the commit.
+#
+# Runs every day at 10:00 UTC (6am Eastern) plus every 4 hours in season
+# (February–May), and can be run by hand from the Actions tab.
+on:
+  schedule:
+    - cron: '0 10 * * *'
+    - cron: '0 */4 * 2-5 *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-mcla
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install --no-audit --no-fund
+
+      - name: Sync from mcla.us
+        run: npm run sync
+
+      - name: Commit changes
+        run: |
+          git config user.name "mcla-sync[bot]"
+          git config user.email "mcla-sync@users.noreply.github.com"
+          git add -A src/data/mcla public/mcla package-lock.json
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "data: sync from mcla.us ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+            git pull --rebase origin ${{ github.ref_name }}
+            git push
+          fi

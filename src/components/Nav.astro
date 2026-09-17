@@ -1,0 +1,93 @@
+---
+import { nav, site } from '../data/site';
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? current === '/' : current.startsWith(href));
+---
+<div class="nav-wrap">
+  <nav class="nav" aria-label="Main">
+    <a href="/" class="brand">
+      <img src="/logo-white.png" alt="" width="34" height="34" />
+      <span>{site.name}</span>
+    </a>
+    <div class="links" id="nav-links">
+      <span class="indicator" aria-hidden="true"></span>
+      {nav.map((l) => (
+        <a href={l.href} class:list={['link', { active: isActive(l.href) }]} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a>
+      ))}
+    </div>
+    <a href="/#contact" class="btn btn--sm cta">Contact Us <span class="arrow">→</span></a>
+    <button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span>
+    </button>
+  </nav>
+</div>
+<div class="mobile-menu" id="mobile-menu" hidden>
+  {nav.map((l) => <a href={l.href} class:list={[{ active: isActive(l.href) }]}>{l.label}</a>)}
+  <a href="/#contact">Contact Us</a>
+</div>
+
+<style>
+  .nav-wrap { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; justify-content: center; padding: 0 24px; pointer-events: none; }
+  .nav {
+    pointer-events: auto;
+    width: 100%; max-width: var(--max);
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px;
+    padding: 8px 10px 8px 18px;
+    border-radius: 0 0 16px 16px;
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.08); border-top: none;
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.4);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: #fff; }
+  .brand img { width: 34px; height: 34px; object-fit: contain; }
+  .brand span { font-weight: 600; font-size: 19px; letter-spacing: -0.02em; white-space: nowrap; }
+  .links { position: relative; display: flex; justify-content: center; align-items: center; gap: 6px; min-width: 0; overflow: hidden; }
+  .link { position: relative; z-index: 1; padding: 8px 16px; border-radius: 999px; font-size: 15px; font-weight: 500; color: #fff; opacity: 0.78; transition: opacity 0.2s; white-space: nowrap; }
+  .link.active, .link:hover, .links:hover .link.is-hover { opacity: 1; }
+  .links:hover .link { opacity: 0.78; }
+  .links:hover .link:hover { opacity: 1; }
+  .indicator { position: absolute; top: 0; bottom: 0; left: 0; width: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.1); opacity: 0; transition: left 0.4s cubic-bezier(0.3, 1.3, 0.4, 1), width 0.4s cubic-bezier(0.3, 1.3, 0.4, 1), opacity 0.2s; }
+  .burger { display: none; width: 40px; height: 40px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12); background: transparent; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .burger span { display: block; width: 18px; height: 2px; background: #fff; transition: transform .25s; }
+  .burger[aria-expanded="true"] span:first-child { transform: translateY(4px) rotate(45deg); }
+  .burger[aria-expanded="true"] span:last-child { transform: translateY(-4px) rotate(-45deg); }
+  .mobile-menu { position: fixed; top: 64px; left: 24px; right: 24px; z-index: 49; display: flex; flex-direction: column; padding: 12px; border-radius: 16px; background: rgba(12,12,12,.92); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.1); box-shadow: 0 16px 50px rgba(0,0,0,.5); }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu a { padding: 14px 16px; border-radius: 10px; font-size: 17px; font-weight: 500; }
+  .mobile-menu a.active, .mobile-menu a:hover { background: rgba(255,255,255,.08); }
+  @media (max-width: 760px) {
+    .nav { grid-template-columns: auto 1fr auto; }
+    .links, .cta { display: none; }
+    .burger { display: flex; justify-self: end; }
+  }
+</style>
+
+<script>
+  // Sliding pill under the hovered/active nav link
+  const links = document.getElementById('nav-links');
+  const indicator = links?.querySelector<HTMLElement>('.indicator');
+  const items = Array.from(links?.querySelectorAll<HTMLElement>('.link') ?? []);
+  const active = items.find((a) => a.classList.contains('active'));
+  const moveTo = (el?: HTMLElement) => {
+    if (!indicator) return;
+    if (!el) { indicator.style.opacity = '0'; return; }
+    indicator.style.left = el.offsetLeft + 'px';
+    indicator.style.width = el.offsetWidth + 'px';
+    indicator.style.opacity = '1';
+  };
+  items.forEach((a) => a.addEventListener('mouseenter', () => moveTo(a)));
+  links?.addEventListener('mouseleave', () => moveTo(active));
+  requestAnimationFrame(() => moveTo(active));
+  addEventListener('resize', () => moveTo(active));
+
+  // Mobile menu
+  const burger = document.querySelector<HTMLButtonElement>('.burger');
+  const menu = document.getElementById('mobile-menu');
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    if (menu) menu.hidden = open;
+  });
+</script>

@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import { meta, stats, roster } from '../lib/mcla';
+const slugFor = (number: number | null, slug: string) => roster.find((p) => p.number === number)?.slug || null;
+const field = [...stats.field].sort((a, b) => (b.pts ?? 0) - (a.pts ?? 0) || (b.g ?? 0) - (a.g ?? 0));
+const goalies = [...stats.goalies].sort((a, b) => (b.saves ?? 0) - (a.saves ?? 0));
+const t = stats.team;
+---
+<Base title={`${meta.season} Stats`} description={`Michigan State Men's Lacrosse ${meta.season} team and player statistics.`}>
+  <div class="container page">
+    <div class="eyebrow">{meta.season} Season</div>
+    <h1 class="h-page">Stats</h1>
+
+    {t?.field && (
+      <div class="team" data-reveal>
+        {[['Goals', t.field.g], ['Assists', t.field.a], ['Points', t.field.pts], ['Shots', t.field.sh], ['Ground balls', t.field.gb], ['Caused TO', t.field.cto], ['Faceoffs', `${t.field.fow}-${t.field.fol}`], ['Saves', t.goalie?.saves], ['Save %', t.goalie?.savePct != null ? `${t.goalie.savePct}%` : '—']].map(([k, v]) => (
+          <div class="stat"><div class="v">{v ?? '—'}</div><div class="k">{k}</div></div>
+        ))}
+      </div>
+    )}
+
+    <h2 class="sub">Field Players</h2>
+    <div class="table-wrap" data-reveal>
+      <table class="stats">
+        <thead><tr><th>#</th><th class="left">Player</th><th>GP</th><th>G</th><th>A</th><th>Pts</th><th>Sh</th><th>GB</th><th>CTO</th><th>Pn</th><th>FO W-L</th></tr></thead>
+        <tbody>
+          {field.map((s) => { const slug = slugFor(s.number, s.slug); return (
+            <tr>
+              <td>{s.number}</td>
+              <td class="name left">{slug ? <a href={`/roster/${slug}`}>{s.name}</a> : s.name}<span class="pos">{s.position}</span></td>
+              <td>{s.gp}</td><td>{s.g}</td><td>{s.a}</td><td><b>{s.pts}</b></td><td>{s.sh}</td><td>{s.gb}</td><td>{s.cto}</td><td>{s.pn}</td>
+              <td>{s.fow || s.fol ? `${s.fow}-${s.fol}` : '—'}</td>
+            </tr>
+          ); })}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="sub">Goalies</h2>
+    <div class="table-wrap" data-reveal>
+      <table class="stats">
+        <thead><tr><th>#</th><th class="left">Player</th><th>GP</th><th>Saves</th><th>GA</th><th>Save %</th><th>GB</th><th>CTO</th></tr></thead>
+        <tbody>
+          {goalies.map((s) => { const slug = slugFor(s.number, s.slug); return (
+            <tr>
+              <td>{s.number}</td>
+              <td class="name left">{slug ? <a href={`/roster/${slug}`}>{s.name}</a> : s.name}</td>
+              <td>{s.gp}</td><td><b>{s.saves}</b></td><td>{s.ga}</td><td>{s.savePct != null ? `${s.savePct}%` : '—'}</td><td>{s.gb}</td><td>{s.cto}</td>
+            </tr>
+          ); })}
+        </tbody>
+      </table>
+    </div>
+    <p class="dim" style="font-size:13px;text-align:center;margin-top:28px">Stats are pulled from <a href={`https://mcla.us/teams/${meta.team.slug}/${meta.season}/stats`} target="_blank" rel="noopener" style="text-decoration:underline">mcla.us</a> and update daily.</p>
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: 180px; min-height: 100vh; max-width: 1300px; }
+  .team { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 48px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 16px; text-align: center; }
+  .stat .v { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat .k { font-size: 13px; color: var(--dim); font-weight: 600; margin-top: 4px; }
+  .sub { font-size: clamp(24px, 2.6vw, 34px); margin: 56px 0 20px; }
+</style>

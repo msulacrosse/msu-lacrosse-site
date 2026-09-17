@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('news', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="News" description="News, recaps and updates from Michigan State Men's Lacrosse.">
+  <div class="container page">
+    <div class="eyebrow">News</div>
+    <h1 class="h-page">From The Sideline</h1>
+    {posts.length ? (
+      <div class="grid-news" style="margin-top:64px">
+        {posts.map((n, i) => <NewsCard post={n} delay={(i % 3) * 100} />)}
+      </div>
+    ) : (
+      <p class="muted" style="text-align:center;margin-top:48px">Nothing posted yet. Check back soon.</p>
+    )}
+  </div>
+</Base>
+<style>.page { padding-top: 180px; min-height: 100vh; }</style>

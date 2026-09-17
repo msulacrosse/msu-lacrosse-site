@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { post: CollectionEntry<'news'>; delay?: number; showPill?: boolean; }
+const { post, delay = 0, showPill = false } = Astro.props;
+const d = post.data;
+const date = d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+---
+<a href={`/news/${post.id}`} class="card news-card" data-reveal data-delay={delay}>
+  <div class="thumb">
+    {d.image ? <img src={d.image} alt={d.imageAlt || ''} loading="lazy" /> : <div class="placeholder"><img src="/logo-white.png" alt="" /></div>}
+  </div>
+  <div class="body">
+    <div class="tags"><span>{d.tag}</span><span class="date">{date}</span></div>
+    <h3>{d.title}</h3>
+    {d.excerpt && <p>{d.excerpt}</p>}
+    {showPill && <span class="pill pill--sm" style="margin-top:22px">Read more</span>}
+  </div>
+</a>

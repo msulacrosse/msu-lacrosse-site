@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('news', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+const date = d.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const more = (await getCollection('news', ({ data, id }) => !data.draft && id !== post.id))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+---
+<Base title={d.title} description={d.excerpt || d.title} image={d.image || '/og.jpg'} type="article">
+  <article class="container page">
+    <a href="/news" class="back">← All news</a>
+    <div class="eyebrow" style="margin-top:28px">{d.tag}</div>
+    <h1 class="h-page" style="font-size:clamp(36px,5vw,72px)">{d.title}</h1>
+    <p class="byline">{date}{d.author ? ` · ${d.author}` : ''}</p>
+    {d.image && <img class="hero-img" src={d.image} alt={d.imageAlt || ''} />}
+    <div class="prose"><Content /></div>
+  </article>
+  {more.length > 0 && (
+    <section class="container" style="margin-top:var(--section-gap)">
+      <div class="eyebrow">More news</div>
+      <div class="grid-news" style="margin-top:40px">{more.map((n, i) => <NewsCard post={n} delay={i * 100} />)}</div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .page { padding-top: 140px; max-width: 1000px; }
+  .back { display: inline-block; font-size: 15px; font-weight: 600; color: var(--muted); }
+  .back:hover { color: #fff; }
+  .byline { text-align: center; color: var(--dim); font-size: 15px; font-weight: 600; margin-top: 20px; }
+  .hero-img { width: 100%; max-height: 620px; object-fit: cover; border-radius: 20px; margin: 48px 0; }
+  .prose { margin-top: 48px; }
+</style>

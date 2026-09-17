@@ -1,0 +1,7 @@
+---
+interface Props { src?: string; alt?: string; label?: string; class?: string; style?: string; delay?: number; reveal?: boolean; }
+const { src, alt = '', label = 'Photo', class: cls = '', style, delay = 0, reveal = true } = Astro.props;
+---
+<div class:list={['photo-tile', cls]} style={style} data-reveal={reveal ? '' : undefined} data-delay={delay}>
+  {src ? <img src={src} alt={alt} loading="lazy" /> : <div class="placeholder">{label}</div>}
+</div>

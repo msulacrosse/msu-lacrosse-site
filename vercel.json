@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "astro",
+  "headers": [
+    { "source": "/admin", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }, { "key": "Cache-Control", "value": "no-store" }] },
+    { "source": "/mcla/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }] },
+    { "source": "/schedule.ics", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }] }
+  ]
+}

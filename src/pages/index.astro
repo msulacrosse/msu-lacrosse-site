@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro';
+import PlayerCard from '../components/PlayerCard.astro';
+import NewsCard from '../components/NewsCard.astro';
+import PhotoTile from '../components/PhotoTile.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../data/site';
+import { meta, upcomingGames, lastResults, featuredPlayers, longDate, gameTime, prefix, opponentLabel, locationLabel, resultLabel } from '../lib/mcla';
+
+const upcoming = upcomingGames().slice(0, 3);
+const recent = upcoming.length ? [] : lastResults(3);
+const games = upcoming.length ? upcoming : recent;
+const scheduleHeading = upcoming.length ? 'Next Up For The Spartans' : 'Latest Results';
+const players = featuredPlayers(5);
+const news = (await getCollection('news', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
+const fan = [
+  { x: '-150%', y: '12%', rot: '-14deg', z: 1 },
+  { x: '-78%', y: '5%', rot: '-7deg', z: 2 },
+  { x: '0%', y: '0%', rot: '0deg', z: 3 },
+  { x: '78%', y: '5%', rot: '7deg', z: 2 },
+  { x: '150%', y: '12%', rot: '14deg', z: 1 },
+];
+---
+<Base>
+  <!-- Hero -->
+  <section class="hero">
+    <picture>
+      <source media="(max-width: 900px)" srcset="/hero-1200.jpg" />
+      <img src="/hero.jpg" alt="Michigan State lacrosse players lined up on the field" fetchpriority="high" />
+    </picture>
+    <div class="hero-shade"></div>
+    <div class="hero-text">
+      <div class="eyebrow" data-reveal>{site.hero.eyebrow}</div>
+      <div class="wordmark">{site.hero.wordmark}</div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="container section section--first">
+    <div class="eyebrow" data-reveal>About the team</div>
+    <h2 class="h-intro" data-reveal data-delay="100">{site.about.heading}</h2>
+    <div class="about-grid">
+      <PhotoTile src={site.about.photos[0].src} alt={site.about.photos[0].alt} label="Team photo" class="about-side" />
+      <PhotoTile src={site.about.photos[1].src} alt={site.about.photos[1].alt} label="Game action (portrait)" class="about-mid" delay={120} />
+      <PhotoTile src={site.about.photos[2].src} alt={site.about.photos[2].alt} label="Travel / locker room" class="about-side" delay={240} />
+    </div>
+    <div class="center" data-reveal style="margin-top:clamp(56px,6vw,90px)">
+      <a href="/about" class="btn">Learn more <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section class="container section">
+    <div class="eyebrow" data-reveal>Schedule</div>
+    <h2 class="h-section" data-reveal data-delay="100">{scheduleHeading}</h2>
+    {!upcoming.length && (
+      <p class="muted" data-reveal data-delay="160" style="text-align:center;margin-top:20px;font-size:17px">
+        The {meta.season} season is in the books. The {Number(meta.season) + 1} schedule will show up here as soon as it's posted.
+      </p>
+    )}
+    <div class="game-cards">
+      {games.map((g, i) => (
+        <a href={`/schedule#${g.id}`} class="card game-card" data-reveal data-delay={i * 80}>
+          <div style="min-width:0">
+            <div class="when">{longDate(g)} · {gameTime(g)}</div>
+            <h3>{prefix(g)} {opponentLabel(g)}</h3>
+            <p class="loc">{locationLabel(g) || (g.home ? 'East Lansing, MI' : 'Away')}</p>
+            <span class:list={['pill', { 'pill--loss': g.result?.outcome === 'L' }]} style="margin-top:24px">{resultLabel(g) || 'Game details'}</span>
+          </div>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </div>
+    <div class="center" data-reveal style="margin-top:48px">
+      <a href="/schedule" class="btn">Full schedule &amp; results <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <!-- Roster -->
+  <section class="container section">
+    <div class="eyebrow" data-reveal>Roster</div>
+    <h2 class="h-section" data-reveal data-delay="100">Meet The Spartans</h2>
+    <div class="grid-players" style="margin-top:clamp(56px,6vw,100px)">
+      {players.map((p, i) => <PlayerCard player={p} delay={i * 80} />)}
+    </div>
+    <div class="center" data-reveal style="margin-top:48px">
+      <a href="/roster" class="btn">Full roster <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <!-- News -->
+  {news.length > 0 && (
+    <section class="container section">
+      <div class="eyebrow" data-reveal>News</div>
+      <h2 class="h-section" data-reveal data-delay="100">From The Sideline</h2>
+      <div class="grid-news" style="margin-top:clamp(56px,6vw,100px)">
+        {news.map((n, i) => <NewsCard post={n} delay={i * 100} showPill />)}
+      </div>
+    </section>
+  )}
+
+  <!-- Sponsors -->
+  {site.sponsors.length > 0 && (
+    <section class="container section">
+      <div class="eyebrow" data-reveal>Our Sponsors</div>
+      <div class="sponsors" data-reveal data-delay="100">
+        {site.sponsors.map((s) => (
+          <a class="sponsor" href={s.url || '#'} target={s.url ? '_blank' : undefined} rel="noopener" title={s.name}>
+            <img src={s.logo} alt={s.name} loading="lazy" />
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ -->
+  <section class="container section">
+    <h2 class="h-section" data-reveal style="max-width:900px;margin-top:0">Everything You Need To Know</h2>
+    <div class="faq" data-reveal style="margin-top:clamp(56px,6vw,100px)">
+      {site.faq.map((f) => (
+        <details name="faq">
+          <summary><span>{f.q}</span><span class="chev">⌵</span></summary>
+          <p class="answer">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <!-- Join / Contact -->
+  <section class="container section" id="contact">
+    <div class="join">
+      <div class="fan" data-reveal>
+        {fan.map((c, i) => (
+          <div class="fan-card" style={`transform:translateX(-50%) translateX(${c.x}) translateY(${c.y}) rotate(${c.rot});z-index:${c.z}`}>
+            <PhotoTile src={site.join.gallery[i]} label="Gallery" reveal={false} style="position:absolute;inset:0;border-radius:16px" />
+          </div>
+        ))}
+      </div>
+      <div class="eyebrow" data-reveal style="margin-top:64px">{site.join.eyebrow}</div>
+      <h2 class="h-section" data-reveal data-delay="100" style="margin-top:28px;max-width:900px">{site.join.heading}</h2>
+      <p class="join-text" data-reveal data-delay="160">{site.join.text}</p>
+      <div class="center" data-reveal data-delay="220" style="margin-top:36px">
+        <a href={`mailto:${site.contactEmail}`} class="btn">Get in touch <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { position: relative; height: 100svh; min-height: 720px; overflow: hidden; background: var(--bg); }
+  .hero picture, .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+  .hero-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(8, 8, 8, 0.55) 0%, rgba(8, 8, 8, 0.35) 40%, rgba(8, 8, 8, 0.7) 75%, #080808 100%); }
+  .hero-text { position: absolute; left: 0; right: 0; bottom: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 0 24px; }
+  .wordmark {
+    width: 100%; text-align: center; font-weight: 800; font-size: clamp(48px, 15.5vw, 290px); line-height: 1; letter-spacing: -0.03em;
+    background: linear-gradient(180deg, #fff 30%, #5a5a5a 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+    white-space: nowrap; padding-bottom: 0.08em;
+  }
+  .about-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: center; margin-top: clamp(64px, 7vw, 110px); }
+  .about-grid :global(.about-side) { height: clamp(240px, 34vw, 500px); }
+  .about-grid :global(.about-mid) { height: clamp(300px, 44vw, 640px); }
+  @media (max-width: 640px) { .about-grid { grid-template-columns: 1fr; } .about-grid :global(.about-side), .about-grid :global(.about-mid) { height: 260px; } }
+
+  .game-cards { display: flex; flex-direction: column; gap: 20px; margin-top: clamp(56px, 6vw, 100px); }
+  .game-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: start; padding: clamp(24px, 3vw, 40px); color: #fff; }
+  .game-card:hover { transform: translateY(-2px); }
+  .game-card .when { font-size: 15px; font-weight: 600; color: var(--mint); }
+  .game-card h3 { font-size: clamp(26px, 3vw, 40px); margin-top: 10px; }
+  .game-card .loc { font-size: 17px; color: var(--muted); margin-top: 12px; }
+  .game-card .go { width: 56px; height: 56px; border-radius: 14px; background: var(--green); display: grid; place-items: center; font-size: 22px; }
+
+  .sponsors { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 40px; }
+  .sponsor { height: 100px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); display: grid; place-items: center; padding: 20px; }
+  .sponsor img { max-height: 100%; width: auto; object-fit: contain; }
+
+  .join { border: 1px solid var(--border); border-radius: 24px; background: var(--card-alt); padding: clamp(56px, 7vw, 110px) 24px; text-align: center; overflow: hidden; }
+  .fan { position: relative; height: clamp(260px, 38vw, 560px); display: flex; justify-content: center; align-items: flex-end; }
+  .fan-card { position: absolute; bottom: 0; left: 50%; width: clamp(110px, 16vw, 300px); height: clamp(200px, 32vw, 540px); border-radius: 16px; overflow: hidden; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); }
+  @media (max-width: 640px) { .fan-card { width: 34vw; height: 46vw; } .fan-card:nth-child(1), .fan-card:nth-child(5) { display: none; } .fan-card:nth-child(2) { transform: translateX(-50%) translateX(-90%) translateY(6%) rotate(-8deg) !important; } .fan-card:nth-child(4) { transform: translateX(-50%) translateX(90%) translateY(6%) rotate(8deg) !important; } .fan { height: 52vw; } }
+  .join-text { margin: 24px auto 0; font-size: clamp(17px, 1.4vw, 22px); color: var(--muted); max-width: 720px; }
+</style>

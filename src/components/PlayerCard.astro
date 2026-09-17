@@ -1,0 +1,19 @@
+---
+import type { Player } from '../lib/mcla';
+interface Props { player: Player; delay?: number; showHometown?: boolean; }
+const { player: p, delay = 0, showHometown = false } = Astro.props;
+const meta = [p.position, p.year, showHometown ? p.hometown : null].filter(Boolean).join(' · ');
+---
+<a href={`/roster/${p.slug}`} class="player-card" data-reveal data-delay={delay}>
+  {p.headshot ? (
+    <img src={p.headshot} alt="" loading="lazy" width="250" height="300" />
+  ) : (
+    <div class="no-photo"><img src="/logo-white.png" alt="" loading="lazy" /></div>
+  )}
+  <div class="shade"></div>
+  {p.number != null && <div class="num">#{p.number}</div>}
+  <div class="info">
+    <div class="name">{p.name}</div>
+    <div class="meta">{meta}</div>
+  </div>
+</a>

@@ -1,0 +1,22 @@
+---
+import { type Game, longDate, gameTime, prefix, opponentLabel, resultLabel, locationLabel } from '../lib/mcla';
+interface Props { game: Game; delay?: number; }
+const { game: g, delay = 0 } = Astro.props;
+const result = resultLabel(g);
+const badgeClass = g.result ? (g.result.outcome === 'W' ? 'badge badge--win' : 'badge badge--loss') : 'badge';
+---
+<div class="card game-row" data-reveal data-delay={delay} id={g.id}>
+  <div class="date">{longDate(g)}<br /><span class="dim">{gameTime(g)}</span></div>
+  <div style="min-width:0">
+    <h3>
+      {g.opponentLogo && <img class="opp-logo" src={g.opponentLogo} alt="" loading="lazy" width="40" height="40" />}
+      <span>{prefix(g)} {opponentLabel(g)}</span>
+    </h3>
+    <p class="loc">{locationLabel(g) || (g.home ? 'East Lansing, MI' : 'Away')}</p>
+  </div>
+  {result ? (
+    g.statsUrl ? <a class={badgeClass} href={g.statsUrl} target="_blank" rel="noopener" title="Box score on mcla.us">{result}</a> : <span class={badgeClass}>{result}</span>
+  ) : (
+    <span class="badge">{g.time ? 'Upcoming' : 'Time TBA'}</span>
+  )}
+</div>

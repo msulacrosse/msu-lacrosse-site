@@ -1,0 +1,88 @@
+---
+import Base from '../../layouts/Base.astro';
+import { meta, roster, statsForPlayer, yearLabel, positionLabel } from '../../lib/mcla';
+
+export function getStaticPaths() {
+  return roster.map((p) => ({ params: { slug: p.slug }, props: { player: p } }));
+}
+const { player: p } = Astro.props;
+const s = statsForPlayer(p) as any;
+const isGoalie = s && 'ga' in s;
+const facts = [
+  ['Position', positionLabel(p.position)],
+  ['Class', yearLabel(p.year)],
+  ['Eligibility', p.eligibility ? `${p.eligibility} year` : null],
+  ['Height', p.height],
+  ['Weight', p.weight],
+  ['Hometown', p.hometown],
+].filter(([, v]) => v);
+const fieldStats = s && !isGoalie ? [
+  ['GP', s.gp], ['Goals', s.g], ['Assists', s.a], ['Points', s.pts], ['Shots', s.sh], ['Ground balls', s.gb], ['Caused TO', s.cto],
+  ...(s.fow || s.fol ? [['Faceoffs', `${s.fow}-${s.fol}`], ['FO %', s.fow + s.fol ? Math.round((s.fow / (s.fow + s.fol)) * 100) + '%' : '—']] : []),
+] : [];
+const goalieStats = s && isGoalie ? [
+  ['GP', s.gp], ['Saves', s.saves], ['Goals against', s.ga], ['Save %', s.savePct != null ? `${s.savePct}%` : '—'], ['Ground balls', s.gb], ['Caused TO', s.cto],
+] : [];
+const statRows = fieldStats.length ? fieldStats : goalieStats;
+const idx = roster.findIndex((x) => x.slug === p.slug);
+const prev = roster[(idx - 1 + roster.length) % roster.length];
+const next = roster[(idx + 1) % roster.length];
+---
+<Base title={`${p.name} · #${p.number}`} description={`${p.name}, #${p.number} ${positionLabel(p.position)} for Michigan State Men's Lacrosse.`} image={p.headshot || '/og.jpg'}>
+  <div class="container page">
+    <a href="/roster" class="back">← Full roster</a>
+    <div class="profile">
+      <div class="photo">
+        {p.headshot ? <img src={p.headshot} alt="" width="250" height="300" /> : <div class="no-photo"><img src="/logo-white.png" alt="" /></div>}
+        <div class="num">#{p.number}</div>
+      </div>
+      <div class="details">
+        <div class="eyebrow" style="justify-content:flex-start">{meta.season} Spartans</div>
+        <h1>{p.name}</h1>
+        <p class="sub">{positionLabel(p.position)}{p.year ? ` · ${yearLabel(p.year)}` : ''}{p.hometown ? ` · ${p.hometown}` : ''}</p>
+        <dl class="facts">
+          {facts.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+        {statRows.length > 0 && (
+          <>
+            <h2 class="stats-title">{meta.season} Season Stats</h2>
+            <div class="stat-grid">
+              {statRows.map(([k, v]) => <div class="stat"><div class="v">{v ?? '—'}</div><div class="k">{k}</div></div>)}
+            </div>
+          </>
+        )}
+        {p.url && <a href={p.url} class="ext" target="_blank" rel="noopener">Player page on mcla.us ↗</a>}
+      </div>
+    </div>
+    <div class="pager">
+      <a href={`/roster/${prev.slug}`}>← #{prev.number} {prev.name}</a>
+      <a href={`/roster/${next.slug}`}>#{next.number} {next.name} →</a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .page { padding-top: 140px; min-height: 100vh; max-width: 1200px; }
+  .back { display: inline-block; font-size: 15px; font-weight: 600; color: var(--muted); margin-bottom: 28px; }
+  .back:hover { color: #fff; }
+  .profile { display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: clamp(28px, 5vw, 72px); align-items: start; }
+  @media (max-width: 720px) { .profile { grid-template-columns: 1fr; } }
+  .photo { position: relative; aspect-ratio: 3 / 4; border-radius: 22px; overflow: hidden; background: var(--card); border: 1px solid var(--border); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .photo .no-photo { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(120% 80% at 50% 0%, #163d34 0%, #0d0d0d 70%); }
+  .photo .no-photo img { width: 46%; height: auto; opacity: 0.35; object-fit: contain; }
+  .photo .num { position: absolute; top: 20px; left: 20px; font-weight: 800; font-size: 40px; line-height: 1; text-shadow: 0 4px 24px rgba(0,0,0,.6); }
+  h1 { font-size: clamp(40px, 5vw, 72px); margin-top: 20px; }
+  .sub { font-size: 18px; color: var(--muted); margin-top: 12px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin: 36px 0 0; }
+  .facts dt { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dim); }
+  .facts dd { margin: 4px 0 0; font-size: 18px; font-weight: 600; }
+  .stats-title { font-size: 22px; margin-top: 48px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 18px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .stat .v { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat .k { font-size: 13px; color: var(--dim); font-weight: 600; margin-top: 4px; }
+  .ext { display: inline-block; margin-top: 32px; font-size: 14px; color: var(--mint); font-weight: 600; }
+  .pager { display: flex; justify-content: space-between; gap: 16px; margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--divider); font-weight: 600; color: var(--muted); }
+  .pager a:hover { color: #fff; }
+</style>

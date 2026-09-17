@@ -1,0 +1,28 @@
+{
+  "name": "msu-lacrosse-site",
+  "version": "1.0.0",
+  "description": "Michigan State Men's Lacrosse team website",
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "node scripts/ensure-data.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "sync": "node scripts/sync-mcla.mjs",
+    "test": "node scripts/test-sync.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@astrojs/vercel": "^11.0.10",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "astro": "^7.3.3",
+    "cheerio": "^1.2.0",
+    "marked": "^18.0.13"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  }
+}
