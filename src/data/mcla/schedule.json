@@ -11,7 +11,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/james-madison-44bacc47.png",
-    "opponentUrl": "https://mcla.us/teams/james-madison/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/james-madison/2026",
     "venue": "James Madison",
     "type": null,
     "result": {
@@ -33,7 +33,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/pittsburgh-24c61c79.png",
-    "opponentUrl": "https://mcla.us/teams/pittsburgh/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/pittsburgh/2026",
     "venue": "Pitt Sports Dome",
     "type": null,
     "result": {
@@ -55,7 +55,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/buffalo-45c4c491.png",
-    "opponentUrl": "https://mcla.us/teams/buffalo/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/buffalo/2026",
     "venue": "Michigan State - Ralph Young Field",
     "type": null,
     "result": {
@@ -77,7 +77,7 @@
     "opponentRank": 18,
     "seed": null,
     "opponentLogo": "/mcla/logos/chapman-015970f5.png",
-    "opponentUrl": "https://mcla.us/teams/chapman/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/chapman/2026",
     "venue": "Chapman Stadium",
     "type": null,
     "result": {
@@ -99,7 +99,7 @@
     "opponentRank": 11,
     "seed": null,
     "opponentLogo": "/mcla/logos/san-diego-state-1b18fd0b.png",
-    "opponentUrl": "https://mcla.us/teams/san-diego-state/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/san-diego-state/2026",
     "venue": "San Diego State University",
     "type": null,
     "result": {
@@ -121,7 +121,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/san-diego-202385c6.png",
-    "opponentUrl": "https://mcla.us/teams/san-diego/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/san-diego/2026",
     "venue": "Kearny High School",
     "type": null,
     "result": {
@@ -143,7 +143,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/miami-ohio-7d49b321.png",
-    "opponentUrl": "https://mcla.us/teams/miami-ohio/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/miami-ohio/2026",
     "venue": "Cook Field",
     "type": "Divisional",
     "result": {
@@ -165,7 +165,7 @@
     "opponentRank": 1,
     "seed": null,
     "opponentLogo": "/mcla/logos/grand-valley-state-a4b24302.png",
-    "opponentUrl": "https://mcla.us/teams/grand-valley-state/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/grand-valley-state/2026",
     "venue": "Spartan Greens Turf Complex",
     "type": null,
     "result": {
@@ -187,7 +187,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/purdue-7d079fbe.png",
-    "opponentUrl": "https://mcla.us/teams/purdue/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/purdue/2026",
     "venue": "Purdue Intramural Black",
     "type": null,
     "result": {
@@ -209,7 +209,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/indiana-university-009b1c73.png",
-    "opponentUrl": "https://mcla.us/teams/indiana-university/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/indiana-university/2026",
     "venue": "Sembower Recreational Sports Complex",
     "type": "Divisional",
     "result": {
@@ -231,7 +231,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/western-michigan-2233542d.png",
-    "opponentUrl": "https://mcla.us/teams/western-michigan/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/western-michigan/2026",
     "venue": "Spartan Greens",
     "type": "Divisional",
     "result": {
@@ -253,7 +253,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/central-michigan-4ebb3411.png",
-    "opponentUrl": "https://mcla.us/teams/central-michigan/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/central-michigan/2026",
     "venue": "Michigan State - Ralph Young Field",
     "type": null,
     "result": {
@@ -275,7 +275,7 @@
     "opponentRank": null,
     "seed": "2W",
     "opponentLogo": "/mcla/logos/purdue-7d079fbe.png",
-    "opponentUrl": "https://mcla.us/teams/purdue/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/purdue/2026",
     "venue": "Hopkins High School - H3",
     "type": "Playoff",
     "result": {
@@ -297,7 +297,7 @@
     "opponentRank": null,
     "seed": null,
     "opponentLogo": "/mcla/logos/minnesota-8bc29868.png",
-    "opponentUrl": "https://mcla.us/teams/minnesota/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/minnesota/2026",
     "venue": "Hopkins High School - H3",
     "type": "Playoff",
     "result": {
@@ -319,7 +319,7 @@
     "opponentRank": null,
     "seed": "1",
     "opponentLogo": "/mcla/logos/brigham-young-3356aa1f.png",
-    "opponentUrl": "https://mcla.us/teams/brigham-young/2026-stats",
+    "opponentUrl": "https://mcla.us/teams/brigham-young/2026",
     "venue": "River City Sportsplex Field 11",
     "type": "Tournament",
     "result": {
